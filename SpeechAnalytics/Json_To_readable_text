@@ -17,7 +17,7 @@ for q in l1:
     for n in l2:
         if q[1]==n['from']:
             l3.append((q[0],n['speaker'], q[1], q[2]))
-print(l3)
+#print(l3)
 
 df = pd.DataFrame(l3, columns=['word', 'speaker', 'from','to'])
 
