@@ -1,0 +1,38 @@
+import json
+data = response     # jason output from watson api
+
+l1 = []
+l2 = []
+l3 = []
+
+for i in data['results']:
+    for j in i['alternatives'][0]['timestamps']:
+        l1.append(j)
+
+for m in data['speaker_labels']:
+     l2.append(m)
+
+for q in l1:
+    for n in l2:
+        if q[1]==n['from']:
+            l3.append((q[0],n['speaker'], q[1], q[2]))
+print(l3)
+
+df = pd.DataFrame(l3, columns=['word', 'speaker', 'from','to'])
+
+l4 = []
+for i in data['results']:
+    l4.append(i['alternatives'][0]['transcript'])
+
+df1 = labels.merge(df)
+
+df2 = df1.sort_values(['from', 'to'])
+df2['current_speaker'] = (df2.speaker.shift() != df2.speaker).cumsum()
+
+transcripts = df2.groupby('current_speaker').agg({
+   'word': lambda x: ' '.join(x),
+   'speaker': min
+}).rename(columns={'word': 'transcript'})
+gg = transcripts[['speaker', 'transcript']].to_json(orient='records')
+
+gg.split('},{')
